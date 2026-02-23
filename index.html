@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FocusFlow — Timer por actividad</title>
+  <meta name="description" content="Timer de concentración con categorías (trabajo, deporte, TV, ordenador). 100% en tu navegador." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="grain"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">⏳</div>
+      <div>
+        <div class="brand-name">FocusFlow</div>
+        <div class="brand-sub">Timer por actividad · sin apps · sin cuentas</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="btnFocus" class="iconbtn" title="Modo Focus (F)">
+        <span class="icon" aria-hidden="true">🎯</span>
+        <span class="label">Focus</span>
+      </button>
+      <button id="btnTheme" class="iconbtn" title="Tema (T)">
+        <span class="icon" aria-hidden="true">🌗</span>
+        <span class="label">Tema</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout" id="app">
+    <section class="panel left">
+      <h1>Elige tu actividad</h1>
+      <p class="muted">Cada actividad puede tener su propio tiempo por defecto y estadísticas.</p>
+
+      <div class="chips" id="chips" role="tablist" aria-label="Actividades"></div>
+
+      <div class="card settings">
+        <div class="row">
+          <label for="minutesInput" class="small">Minutos</label>
+          <div class="inline">
+            <input id="minutesInput" type="number" min="1" max="180" step="1" />
+            <button id="applyBtn" class="btn secondary">Aplicar</button>
+          </div>
+        </div>
+
+        <div class="row two">
+          <button id="toggleBtn" class="btn primary">Iniciar</button>
+          <button id="resetBtn" class="btn ghost">Reset</button>
+        </div>
+
+        <div class="hints">
+          <span class="kbd">Espacio</span> Iniciar/Pausar
+          <span class="dot">•</span>
+          <span class="kbd">R</span> Reset
+          <span class="dot">•</span>
+          <span class="kbd">F</span> Focus
+          <span class="dot">•</span>
+          <span class="kbd">T</span> Tema
+        </div>
+      </div>
+
+      <div class="card stats">
+        <div class="stats-head">
+          <div>
+            <div class="small muted">Estadísticas</div>
+            <div class="stats-title" id="statsTitle">—</div>
+          </div>
+          <button id="clearStats" class="link">Borrar</button>
+        </div>
+
+        <div class="grid">
+          <div class="stat">
+            <div class="k">Hoy</div>
+            <div class="v" id="statToday">0</div>
+            <div class="s">sesiones</div>
+          </div>
+          <div class="stat">
+            <div class="k">Total</div>
+            <div class="v" id="statTotal">0</div>
+            <div class="s">sesiones</div>
+          </div>
+          <div class="stat">
+            <div class="k">Minutos</div>
+            <div class="v" id="statMinutes">0</div>
+            <div class="s">acumulados</div>
+          </div>
+        </div>
+
+        <div class="note" id="note">
+          Tip: define una intención concreta (p.ej. “solo 1 tarea”) y pon “No molestar”.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel right">
+      <div class="hero card" id="hero">
+        <div class="hero-top">
+          <div class="pill" id="activityPill">
+            <span class="pill-icon" id="activityIcon">—</span>
+            <span class="pill-text" id="activityName">—</span>
+          </div>
+
+          <div class="status" id="status">
+            <span class="dotlive" id="liveDot" aria-hidden="true"></span>
+            <span id="statusText">Listo</span>
+          </div>
+        </div>
+
+        <div class="timer-wrap">
+          <div class="timer">
+            <svg class="ring" viewBox="0 0 220 220" aria-hidden="true">
+              <defs>
+                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="var(--accent1)"/>
+                  <stop offset="100%" stop-color="var(--accent2)"/>
+                </linearGradient>
+              </defs>
+              <circle class="track" cx="110" cy="110" r="90"></circle>
+              <circle class="progress" cx="110" cy="110" r="90"></circle>
+            </svg>
+
+            <div class="time">
+              <div class="big" id="timeText">25:00</div>
+              <div class="small muted" id="subText">Preparado</div>
+            </div>
+          </div>
+
+          <div class="side-meter" aria-hidden="true">
+            <div class="meter">
+              <div class="fill" id="meterFill"></div>
+            </div>
+            <div class="meter-label">
+              <span id="pctText">0%</span>
+              <span class="muted">completado</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-bottom">
+          <div class="quote" id="quote">“Hazlo fácil: 1 bloque, 1 objetivo.”</div>
+          <div class="mini-actions">
+            <button id="skipBtn" class="btn tiny ghost" title="Terminar sesión (solo para pruebas)">Terminar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="focus-overlay" id="focusOverlay" aria-hidden="true">
+        <div class="focus-card">
+          <div class="focus-activity" id="focusActivity">—</div>
+          <div class="focus-time" id="focusTime">25:00</div>
+          <div class="focus-sub" id="focusSub">Espacio para pausar · Esc para salir</div>
+          <div class="focus-ring" aria-hidden="true">
+            <div class="focus-glow"></div>
+            <svg class="ring bigring" viewBox="0 0 220 220">
+              <circle class="track" cx="110" cy="110" r="90"></circle>
+              <circle class="progress" cx="110" cy="110" r="90"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
